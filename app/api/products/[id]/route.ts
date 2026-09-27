@@ -9,55 +9,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-// Handler untuk Preflight Request CORS
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
-// 1. GET (Single): Ambil detail 1 produk berdasarkan ID
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-
-    const { data, error } = await supabaseAdmin
-      .from('products')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Data produk tidak ditemukan',
-          error_message: error.message,
-        },
-        { status: 404, headers: corsHeaders }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: true,
-        data,
-      },
-      { status: 200, headers: corsHeaders }
-    );
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: err?.message || 'Server Error',
-      },
-      { status: 500, headers: corsHeaders }
-    );
-  }
-}
-
-// 2. PUT: Update data produk berdasarkan ID
+// 1. PUT: Edit Produk berdasarkan ID
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -78,35 +34,18 @@ export async function PUT(
 
     if (error) {
       return NextResponse.json(
-        {
-          success: false,
-          message: 'Gagal mengupdate data produk',
-          error_message: error.message,
-        },
+        { success: false, message: 'Gagal mengupdate data', error_message: error.message },
         { status: 400, headers: corsHeaders }
       );
     }
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: 'Produk berhasil diperbarui!',
-        data: data[0],
-      },
-      { status: 200, headers: corsHeaders }
-    );
+    return NextResponse.json({ success: true, data: data[0] }, { status: 200, headers: corsHeaders });
   } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: err?.message || 'Server Error',
-      },
-      { status: 500, headers: corsHeaders }
-    );
+    return NextResponse.json({ success: false, error: err?.message || 'Server Error' }, { status: 500, headers: corsHeaders });
   }
 }
 
-// 3. DELETE: Hapus data produk berdasarkan ID
+// 2. DELETE: Hapus Produk berdasarkan ID
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -121,29 +60,13 @@ export async function DELETE(
 
     if (error) {
       return NextResponse.json(
-        {
-          success: false,
-          message: 'Gagal menghapus data produk',
-          error_message: error.message,
-        },
+        { success: false, message: 'Gagal menghapus data', error_message: error.message },
         { status: 400, headers: corsHeaders }
       );
     }
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: 'Produk berhasil dihapus!',
-      },
-      { status: 200, headers: corsHeaders }
-    );
+    return NextResponse.json({ success: true, message: 'Produk berhasil dihapus!' }, { status: 200, headers: corsHeaders });
   } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: err?.message || 'Server Error',
-      },
-      { status: 500, headers: corsHeaders }
-    );
+    return NextResponse.json({ success: false, error: err?.message || 'Server Error' }, { status: 500, headers: corsHeaders });
   }
 }
